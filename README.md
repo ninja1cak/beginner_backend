@@ -1,5 +1,5 @@
 # Beginner Backend
-Pembuatan backend menggunakan framework express.js dengan database postgresql
+Pembuatan backend menggunakan framework express.js dengan database postgresql. Flow yang digunakan menggunakan prinsip Model-View-Controller (MVC)
 
 ## Task Revision
 Task yang sudah direvisi adalah sebagai berikut.
