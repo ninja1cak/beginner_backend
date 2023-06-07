@@ -1,5 +1,7 @@
 const ctrl = {}
 const model = require('../models/user')
+const bcrypt = require('bcrypt')
+const jwt = require('../util/jwt')
 
 ctrl.login = async (req, res) =>{
   try {
@@ -7,19 +9,24 @@ ctrl.login = async (req, res) =>{
 
     const dataUserFromDB = await model.getByUser({username})
     
-    const passwordFromDB = dataUserFromDB[0].password_user
 
     if(dataUserFromDB.length<= 0){
       return res.send("user tidak terdaftar")
     }
-
-    if(passwordFromDB === req.body.password_user){
-      return res.send("anda berhasil login")
+    const passwordFromDB = dataUserFromDB[0].password_user
+    const isPassword = await bcrypt.compare(req.body.password_user, passwordFromDB)
+  
+    if(isPassword){
+      const token = jwt.generateToken(username)
+      return res.send({
+        status : "berhasil login",
+        message: "token created",
+        token
+      })
     }else{
       return res.send("password salah")
     }
-    
-    
+        
     //return res.send(dataUserFromDB)
     
   } catch (error) {
