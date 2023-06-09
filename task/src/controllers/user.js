@@ -9,7 +9,7 @@ ctrl.insertDataUser = async (req, res) =>{
     console.log(req.body)
     let roleValue = ''
     
-    if(req.body?.role == undefined) { //req.body?.r
+    if(req.body?.role == undefined) { //req.body?.role cek apakah ada object role
       roleValue  = 'user'
     }else{
       roleValue = req.body.role
