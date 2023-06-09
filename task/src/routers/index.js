@@ -17,4 +17,6 @@ route.use('/booking', booking)
 route.use('/search',query)
 route.use('/user', user)
 route.use('/auth', auth)
+
+
 module.exports = route

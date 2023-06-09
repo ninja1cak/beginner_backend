@@ -3,9 +3,14 @@ const model = require('../models/movie')
 
 ctrl.insertDataMovie = async (req, res) =>{
   try{
-    
-    const {title_movie, director_movie, casts_movie, release_date_movie} = req.body
-    const result = await model.addDataMovie({title_movie, director_movie, casts_movie, release_date_movie})
+
+    if(req.body.url_image_movie === undefined){
+      console.log(req.file.filename)
+      req.body.url_image_movie = req.file.filename
+    }
+
+    const {title_movie, director_movie, casts_movie, release_date_movie, url_image_movie} = req.body
+    const result = await model.addDataMovie({title_movie, director_movie, casts_movie, release_date_movie, url_image_movie})
     
     return res.status(200).json(result)
 
