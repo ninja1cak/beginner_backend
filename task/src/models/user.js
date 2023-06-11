@@ -72,7 +72,7 @@ model.deleteDataUser = (username) =>{
     database.query(`DELETE FROM users 
     WHERE username = $1`, [username])
     .then((result) =>{
-      result = "delete data user berhaso;"
+      result = "delete data user berhasil"
       resolve(result)
     })
     .catch((error)=>{

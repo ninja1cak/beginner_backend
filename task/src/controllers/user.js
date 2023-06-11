@@ -1,6 +1,9 @@
 const model = require('../models/user')
 const ctrl = {}
 const hash = require('../util/hash') 
+const sendActivationMail = require('../util/mailer')
+const jwt = require('jsonwebtoken')
+require('dotenv/config')
 
 ctrl.insertDataUser = async (req, res) =>{
  
@@ -21,6 +24,10 @@ ctrl.insertDataUser = async (req, res) =>{
       role : roleValue
     }
     
+    const tokenActivation = jwt.sign(req.body.email_user, process.env.KEY)
+
+    sendActivationMail(req.body.email_user, tokenActivation)
+
     const {username, password_user,email_user, role} = parameter
   
     const result = await model.addUser({username, password_user, email_user, role})
