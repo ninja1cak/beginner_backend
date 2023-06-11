@@ -4,6 +4,7 @@ const hash = require('../util/hash')
 const sendActivationMail = require('../util/mailer')
 const jwt = require('jsonwebtoken')
 require('dotenv/config')
+const {respons} = require('../util/respons')
 
 ctrl.insertDataUser = async (req, res) =>{
  
@@ -31,10 +32,10 @@ ctrl.insertDataUser = async (req, res) =>{
     const {username, password_user,email_user, role} = parameter
   
     const result = await model.addUser({username, password_user, email_user, role})
-    return res.send(result)
+    return respons(res, 201, result)
     
   } catch (error) {
-    return res.send(error)
+    return respons(res, 500, error.message)
   }
 
 }
@@ -44,9 +45,9 @@ ctrl.getDataByUser = async (req, res) =>{
 
     const result = await model.readByUser(req.user)
 
-    return res.send(result)
+    return respons(res, 200, result)
   } catch (error) {
-    return res.send(error)
+    throw respons(res, 500, error.message)
   }
 }
 
@@ -67,18 +68,18 @@ ctrl.changeDataByUser = async (req, res) =>{
     console.log(params)
 
     const result = await model.updateDataByUser(params)
-    return res.send(result)
+    return respons(res, 200, result)
   } catch (error) {
-    return res.send(error)
+    return respons(res, 500, error.message)
   }
 }
 
 ctrl.removeDataByUser = async (req, res) =>{
   try{
     const result = await model.deleteDataUser(req.user)
-    return res.send(result)
+    return respons(res, 200, result)
   }catch(error){
-    return res.send(error)
+    return respons(res, 500, error.message)
   }
 }
 module.exports = ctrl

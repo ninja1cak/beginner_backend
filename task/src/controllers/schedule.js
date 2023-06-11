@@ -22,7 +22,7 @@ ctrl.getDataSchedule = async (req, res) => {
       limit : req.query.limit || 2
     }
     const result = await model.readDataSchedule(params)
-    return respons(res, 200, result)
+    return respons(res, 201, result)
   }catch(error){
     return respons(res, 500, error.message)
   }
