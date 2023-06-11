@@ -4,6 +4,13 @@ const app = express()
 const database = require('./src/config/database')
 const routers = require('./src/routers/index')
 const port = process.env.PORT
+const cors = require('cors')
+
+const corsOption = {
+  credentials: true,
+  origin: '*'
+}
+app.use(cors(corsOption))
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 

@@ -1,11 +1,12 @@
 const ctrl = {}
 const model = require('../models/movie')
+const {respons} = require('../util/respons')
 
 ctrl.insertDataMovie = async (req, res) =>{
   try{
 
 
-    if(req.body.url_image_movie === undefined){
+    if(req.file !== undefined){
       console.log(req.file.filename)
       req.body = {
         ...req.body,
@@ -16,10 +17,10 @@ ctrl.insertDataMovie = async (req, res) =>{
     const {title_movie, genre, director_movie, casts_movie, release_date_movie, url_image_movie} = req.body
     const result = await model.addDataMovie({title_movie, genre, director_movie, casts_movie, release_date_movie, url_image_movie})
     
-    return res.status(200).json(result)
+    return respons(res, 201, result)
 
   }catch(e){
-    return res.send(e)
+    return respons(res, 500, e.message)
   }
 }
 
@@ -34,16 +35,23 @@ ctrl.getDataMovie = async (req, res) =>{
     }
     console.log(params)
     const result = await model.readDataMovie(params)
-    return res.status(200).json(result)
+    return respons(res, 200, result)
 
   }catch(e){
-    return res.send(e)
+    return respons(res, 500, e.message)
   }
 }
 
 ctrl.changaDataMovie = async (req, res)=>{
   try{
+
     const {id_movie} = req.params
+   
+    if(req.file != undefined){
+      req.body.url_image_movie = req.file.filename
+    }
+
+    console.log('masuk changedatamovie')
     const {title_movie, 
       genre, 
       director_movie, 
@@ -52,7 +60,7 @@ ctrl.changaDataMovie = async (req, res)=>{
       url_image_movie, 
       synopsis_movie,
       duration_movie} = req.body
-
+    
     const result = await model.updateDataMovie({  
       title_movie, 
       genre, 
@@ -63,21 +71,24 @@ ctrl.changaDataMovie = async (req, res)=>{
       id_movie, 
       synopsis_movie,
       duration_movie})
-    return res.status(200).json(result)
+    
+      console.log(result)
+    return respons(res, 200, result)
   }catch(e){
-    return res.send(e)
+    return respons(res, 500, e.message)
   }
 }
 
 ctrl.removeDataMovie = async (req, res) =>{
   try{
     
+
     const {id_movie} = req.params
 
     const result = await model.deleteDataMovie({id_movie})
-    return res.status(200).json(result)
+    return respons(res, 200, result)
   }catch(e){
-    return res.send(e)
+    return respons(res, 500, e.message)
   }
 }
 
@@ -91,9 +102,9 @@ ctrl.getDataMovieBy = async (req, res) =>{
     }
     console.log(params)
     const result = await model.readDataMovieBy(params)
-    return res.send(result)
+    return respons(res, 200, result)
   } catch (error) {
-    return res.send(error)
+    return respons(res, 500, error.message)
   }
 }
 

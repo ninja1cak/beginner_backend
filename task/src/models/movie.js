@@ -41,11 +41,12 @@ model.addDataMovie = async ({title_movie, genre, director_movie, casts_movie, re
     
   } catch (error) {
     await database.query('ROLLBACK')
-    return error
+    throw error
   }
 }
 
 model.readDataMovie = async ({page, limit}) =>{
+  // eslint-disable-next-line no-useless-catch
   try {
    
     const offset =  (page-1) * limit
@@ -90,7 +91,7 @@ model.readDataMovie = async ({page, limit}) =>{
     }
     
   } catch (error) {
-   
+    throw error
   }
 }
 
@@ -107,7 +108,7 @@ model.updateDataMovie = async ({
     try {
       await database.query('BEGIN')
       
-      const update = await database.query(`UPDATE public.movie
+      await database.query(`UPDATE public.movie
       SET
         title_movie = COALESCE(NULLIF($1, ''), title_movie),
         director_movie = COALESCE(NULLIF($2, ''), director_movie),
@@ -126,51 +127,52 @@ model.updateDataMovie = async ({
         duration_movie,
         id_movie
       ])
-      await database.query("COMMIT")    
-     
+      console.log(id_movie)
+  
+      await database.query("COMMIT")   
       if(genre.length > 0){
 
-      const getDataMovieGenre = await database.query(`SELECT id_bridge_movie_genre 
-      FROM public.bridge_movie_genre WHERE id_movie = $1`,[id_movie])
-  
-      genre.map(async(element, index) => {      
-      
-        return await database.query(`UPDATE public.bridge_movie_genre
-          SET 
-            id_genre = $1
-          WHERE
-            id_bridge_movie_genre = $2
-        `,[
-          element,
-          getDataMovieGenre.rows[index].id_bridge_movie_genre
-        ])
-      })
+        const getDataMovieGenre = await database.query(`SELECT id_bridge_movie_genre 
+        FROM public.bridge_movie_genre WHERE id_movie = $1`,[id_movie])
+        genre = [genre]
+        genre.map( async (element, index) => {      
+        
+          return await database.query(`UPDATE public.bridge_movie_genre
+            SET 
+              id_genre = $1
+            WHERE
+              id_bridge_movie_genre = $2
+          `,[
+            element,
+            getDataMovieGenre.rows[index].id_bridge_movie_genre
+          ])
+        })
     }
-
-
-      return `${update.rowCount} update berhasil`
+ 
+      return "update berhasil"
     } catch (error) {
       await database.query("ROLLBACK")
-      return "update gagal"
+      throw error
     }
   }
 
 
-model.deleteDataMovie = ({id_movie}) =>{
-  return new Promise((resolve, reject) =>{
-   
-    database.query(`DELETE FROM public.movie WHERE id_movie = $1`,[id_movie])
-    .then((result) =>{
-      resolve("data movie succesfully deleted")
-    })
-    .catch((e)=>{
-      console.log(e)
-      reject("failed to delete data movie")
-    })
-  })
+model.deleteDataMovie = async ({id_movie}) =>{
+  try {
+    await database.query('BEGIN')
+    
+    await database.query('DELETE FROM public.bridge_movie_genre WHERE id_movie = $1',[id_movie])
+    const result = await database.query('DELETE FROM public.movie WHERE id_movie = $1', [id_movie]) 
+    await database.query('COMMIT')
+    return `${result.rowCount} delete berhasil`
+  } catch (error) {
+    await database.query('ROLLBACK')
+    throw error
+  }
 }
 
 model.readDataMovieBy = async ({page, limit, orderBy, search}) =>{
+  // eslint-disable-next-line no-useless-catch
   try {
     search[0] += '%'
     
@@ -235,11 +237,11 @@ model.readDataMovieBy = async ({page, limit, orderBy, search}) =>{
 
     return {
       meta : meta,
-      data : data
+      data : data.rows
     }
     
   } catch (error) {
-    
+    throw error
   }
 }
 

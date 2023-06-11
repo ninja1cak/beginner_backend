@@ -18,6 +18,7 @@ authCheck.check = (req, res, next) =>{
    
     req.user = decode.data
     req.role = decode.role
+    req.id = decode.id
     return next()
 
   })

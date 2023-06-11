@@ -1,15 +1,10 @@
 const express = require('express')
 const route = express.Router()
 const ctrl = require('../controllers/genre')
-const cors = require('cors')
+const authCheck = require('../middleware/authCheck')
 
-const corsOptions = {
-  credential: true,
-  origin : "*"
-}
-
-route.post('/insert', ctrl.insertDataGenre)
-route.get('/show', cors(corsOptions), ctrl.getDataGenre)
-route.put('/update/:id_genre', ctrl.changeDataGenre)
-route.delete('/delete/:id_genre', ctrl.removeDataGenre)
+route.post('/insert', [authCheck.check, authCheck.isAdmin], ctrl.insertDataGenre)
+route.get('/show', [authCheck.check, authCheck.isAdminOrUser], ctrl.getDataGenre)
+route.put('/update/:id_genre', [authCheck.check, authCheck.isAdmin], ctrl.changeDataGenre)
+route.delete('/delete/:id_genre', [authCheck.check, authCheck.isAdmin], ctrl.removeDataGenre)
 module.exports = route

@@ -45,8 +45,21 @@ ctrl.getDataByUser = async (req, res) =>{
 
 ctrl.changeDataByUser = async (req, res) =>{
   try {
-    const {username, email_user, password_user} = req.body
-    const result = await model.updateDataByUser({username, email_user, password_user, old_username: req.user})
+
+    let password_user = ''
+    if(req.body.password_user != undefined){
+      console.log("password")
+      password_user = await hash(req.body.password_user)
+    }
+
+    const params = {
+      ...req.body,
+      password_user: password_user,
+      id_user : req.id
+    }
+    console.log(params)
+
+    const result = await model.updateDataByUser(params)
     return res.send(result)
   } catch (error) {
     return res.send(error)

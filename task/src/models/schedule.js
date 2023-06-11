@@ -32,25 +32,38 @@ model.addDataSchedule = ({
       cinema_logo_url
     ])
     .then((result) =>{
-      resolve("data schedule succesfully added")
+      resolve(`${result.rowCount} data schedule succesfully added`)
     })
     .catch((e) =>{
-      reject("failed to add data schedule")
+      reject(e)
     })
   })
 }
 
 
-model.readDataSchedule = () =>{
-  return new Promise((resolve, reject) =>{
-    database.query(`SELECT * FROM public.schedule ORDER BY id_schedule ASC`)
-    .then((result) => {
-      resolve(result.rows)
-    })
-    .catch((e) => {
-      reject("failed to read data schedule")
-    })
-  })
+model.readDataSchedule = async ({page, limit}) =>{
+  // eslint-disable-next-line no-useless-catch
+  try {
+    
+    const offset = (page - 1) * limit
+    const totalData = await database.query(`SELECT COUNT(id_schedule) FROM public.schedule`)
+    const count = totalData.rows[0].count
+    const data = await database.query(`SELECT * FROM public.schedule LIMIT $1 OFFSET $2`, [limit, offset])
+    
+    const meta = {
+      next: count <= 0 ? null : Math.ceil(count/limit) == page ? null : Number(page) + 1,
+      prev: page == 1 ? null : Number(page) - 1,
+    }
+
+    return {
+      meta : meta,
+      data : data.rows
+
+    }
+
+  } catch (error) {
+    throw error
+  }
 }
 
 model.updateDataMovie = ({price_seat, id_schedule}) =>{
@@ -59,10 +72,10 @@ model.updateDataMovie = ({price_seat, id_schedule}) =>{
     SET price_seat = $1 
     WHERE id_schedule = $2`, [price_seat, id_schedule])
     .then((result) => {
-      resolve("data schedule succesfully updated")
+      resolve(`${result.rowCount} data schedule succesfully updated`)
     })
     .catch((e) => {
-      reject("failed to update data schedule")
+      reject(e)
     })
   })
 }
@@ -71,10 +84,10 @@ model.deleteDataMovie = ({id_schedule}) =>{
   return new Promise((resolve, reject) => {
     database.query(`DELETE FROM public.schedule WHERE id_schedule = $1`,[id_schedule])
     .then((result)=>{
-      resolve("data schedule succesfully deleted")
+      resolve(`${result.rowCount} data schedule succesfully deleted`)
     })
     .catch((e) =>{
-      reject("failed to delete data schedule")
+      reject(e)
     })
   })
 }

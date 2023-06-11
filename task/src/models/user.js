@@ -7,7 +7,7 @@ model.addUser = ({username, password_user, email_user, role}) =>{
     database.query(`INSERT INTO public.users(
       username,
       password_user,
-      email_user,
+      email_user, 
       role
     ) VALUES ($1, $2, $3, $4)`, [
       username,
@@ -25,10 +25,10 @@ model.addUser = ({username, password_user, email_user, role}) =>{
   })
 }
 
-model.readByUser = (username) =>{
+model.readByUser = (username, email_user) =>{
   return new Promise ((resolve, reject) => {
     console.log('masuk promise')
-    database.query(`SELECT * FROM public.users WHERE username = $1`, [username])
+    database.query(`SELECT * FROM public.users WHERE username = $1 OR email_user = $2`, [username, email_user])
     .then((res) => {
       console.log('masuk then')
       console.log(res.rows)
@@ -42,19 +42,19 @@ model.readByUser = (username) =>{
   })
 }
 
-model.updateDataByUser = ({username, email_user, password_user, old_username}) =>{
+model.updateDataByUser = ({username, email_user, password_user, id_user}) =>{
   return new Promise ((resolve, reject) =>{
-    console.log({username, email_user, password_user, old_username})
+    console.log({username, email_user, password_user, id_user})
     database.query(`UPDATE public.users 
     SET
       username = COALESCE(NULLIF($1, ''), username),
       email_user = COALESCE(NULLIF($2, ''), email_user),
       password_user = COALESCE(NULLIF($3, ''), password_user)
-    WHERE username = $4`, [
+    WHERE id_user = $4`, [
       username,
       email_user,
       password_user,
-      old_username
+      id_user
     ])
     .then((result) => {
        
