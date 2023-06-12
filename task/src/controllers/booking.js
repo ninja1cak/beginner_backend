@@ -96,4 +96,19 @@ ctrl.removeDataBooking = async (req, res) => {
   }
 }
 
+ctrl.getDetailDataBooking = async (req, res) =>{
+  try {
+    const params = {
+      page: req.query.page || 1,
+      limit: req.query.limit || 2,
+      id_user: req.id
+    }
+    const result = await model.readDetailDataBooking(params)
+    return respons(res, 200, result)
+  } catch (error) {
+    return respons(res, 500, error.message)
+    
+  }
+}
+
 module.exports = ctrl

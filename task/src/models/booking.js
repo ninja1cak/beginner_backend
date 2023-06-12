@@ -113,4 +113,36 @@ model.deleteDataBooking = ({id_booking, id_user}) =>{
   })
 }
 
+model.readDetailDataBooking = async ({id_user, page, limit}) =>{
+  // eslint-disable-next-line no-useless-catch
+  try {
+    const offset = (page-1) * limit
+
+    const totalData = await database.query(`SELECT COUNT(id_user) count FROM booking WHERE id_user = $1`, [id_user])
+    const count = totalData.rows[0].count
+    console.log(count)
+    const meta = {
+      next: count <= 0 ? null : Math.ceil(count/limit) == page ? null : Number(page) +1,
+      prev: page == 1 ? null : Number(page) - 1,
+      total: count
+    }
+
+    const result = await database.query(` select 
+      m.title_movie, 
+      b.seats_booking, 
+      b.watch_date, 
+      b.payment_method, 
+      s.cinema_name, 
+      s.cinema_address, 
+      s.time_playing 
+    from booking b join schedule s on b.id_schedule = s.id_schedule 
+    join movie m on m.id_movie = b.id_movie where b.id_user = $1 limit $2 offset $3`, [id_user, limit, offset])
+
+    return {meta, data: result.rows}
+  } catch (error) {
+    throw error
+  }
+
+}
+
 module.exports = model
