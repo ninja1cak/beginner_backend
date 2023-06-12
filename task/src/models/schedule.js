@@ -53,11 +53,12 @@ model.readDataSchedule = async ({page, limit}) =>{
     const meta = {
       next: count <= 0 ? null : Math.ceil(count/limit) == page ? null : Number(page) + 1,
       prev: page == 1 ? null : Number(page) - 1,
+      total: count
     }
 
     return {
       meta : meta,
-      data : data.rows
+      data : data.rows,
 
     }
 
@@ -92,15 +93,4 @@ model.deleteDataMovie = ({id_schedule}) =>{
   })
 }
 
-model.readDataScheduleBy = ({id_schedule}) =>{
-  return new Promise((resolve, reject) =>{
-    database.query(`SELECT price_seat FROM public.schedule WHERE id_schedule = $1`, [id_schedule])
-    .then((result) => {
-      resolve(result.rows)
-    })
-    .catch((error) => {
-      reject(error)
-    })
-  })
-}
 module.exports = model
