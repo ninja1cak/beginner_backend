@@ -1,7 +1,6 @@
 const express = require('express')
 const route = express.Router()
 const ctrl = require('../controllers/booking')
-const checkAuth = require('../middleware/authCheck')
 const authCheck = require('../middleware/authCheck')
 
 route.get('/show', [authCheck.check, authCheck.isAdminOrUser], ctrl.getDataBooking)

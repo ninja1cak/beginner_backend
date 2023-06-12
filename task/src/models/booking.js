@@ -39,13 +39,25 @@ model.addDataBooking = ({
   })
 }
 
-model.readDataBooking = async (id_user, {page, limit}) =>{
+model.readDataBooking = async (role, id_user, {page, limit}) =>{
  // eslint-disable-next-line no-useless-catch
  try {
-    const totalData = await database.query(`SELECT COUNT(id_user) FROM public.booking WHERE id_user = $1`,[id_user])
-    const count = totalData.rows[0].count
-    const offset = (limit-1) * page
-    const getData = await database.query(`SELECT * FROM public.booking WHERE id_user = $1 LIMIT $2 OFFSET $3`,[id_user, limit, offset])
+    const offset = (limit-1) * page  
+    let count = 0
+    let getData = {}
+    if(role == 'user'){
+
+      const totalData = await database.query(`SELECT COUNT(id_user) FROM public.booking WHERE id_user = $1`,[id_user])
+      count = totalData.rows[0].count    
+      getData = await database.query(`SELECT * FROM public.booking WHERE id_user = $1 LIMIT $2 OFFSET $3`,[id_user, limit, offset])
+    }
+
+    if(role == 'admin'){
+      const totalData = await database.query(`SELECT COUNT(id_booking) FROM public.booking`)
+      count = totalData.rows[0].count
+      getData = await database.query(`SELECT * FROM public.booking LIMIT $1 OFFSET $2`,[limit, offset])
+    }
+
     const meta = {
       next: count <= 0 ? null : count/limit == page ? null : Number(page) + 1,
       previous: page == 1 ? null : Number(page) - 1,

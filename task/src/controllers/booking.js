@@ -43,7 +43,7 @@ ctrl.getDataBooking = async (req, res) =>{
       page : page || 1,
       limit : limit || 2
     }
-    const result = await model.readDataBooking(req.id, params)
+    const result = await model.readDataBooking(req.role, req.id, params)
 
     return respons(res, 200, result)
 
