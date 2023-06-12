@@ -40,7 +40,7 @@ authCheck.isAdminOrUser = (req, res, next) =>{
   if(req.role == 'admin' || req.role == 'user'){
     return next()
   }else{
-    return res.send('Role tidak teridentifikasi')
+    return res.send('Role not identified')
   }
 }
 

@@ -14,11 +14,11 @@ const validate = async (req, res, next) =>{
     }
     
     if(username === result[0].username){
-      return res.send("USERNAME TELAH TELAH TERDAFTAR")
+      return res.send("USERNAME HAS BEEN REGISTERED")
     }
 
     if(email_user == result[0].email_user){
-      return res.send("EMAIL TELAH TERDAFTAR")
+      return res.send("EMAIL HAS BEEN REGISTERED")
     }
 
 

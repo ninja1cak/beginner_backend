@@ -151,7 +151,7 @@ model.updateDataMovie = async ({
         })
     }
       await pg.query("COMMIT")   
-      return "update berhasil"
+      return "update success"
     } catch (error) {
       await pg.query("ROLLBACK")
       throw error

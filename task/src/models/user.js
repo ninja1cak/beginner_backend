@@ -18,10 +18,10 @@ model.addUser = ({username, password_user, email_user, role, status}) =>{
       status      
     ]).then((result)=>{
       
-      result = "User berhasil dibuat, cek email untuk verifikasi akun"
+      result = "User created successfully, check email for account verification"
       resolve(result)
     }).catch((error)=>{
-      error = "data gagal dibuat"
+      error = "account failed to create"
       reject(error)
     })
   })
@@ -37,7 +37,7 @@ model.readByUser = (username, email_user) =>{
       resolve(res.rows)
     })
     .catch((error) =>{
-      error = "gagal"
+      error = "Failed"
       reject(error)
     })
 
@@ -63,7 +63,7 @@ model.updateDataByUser = ({username, email_user, password_user, id_user}) =>{
       resolve(result.rowCount)
     })
     .catch((error) =>{
-      error = 'update gagal'
+      error = 'update failed'
       reject(error)
     })
   })
@@ -74,11 +74,11 @@ model.deleteDataUser = (username) =>{
     database.query(`DELETE FROM users 
     WHERE username = $1`, [username])
     .then((result) =>{
-      result = "delete data user berhasil"
+      result = "delete success"
       resolve(result)
     })
     .catch((error)=>{
-      error = "gagal"
+      error = "failed"
       reject(error)
     })
   })
@@ -99,7 +99,7 @@ model.updateDataStatus = ({email_user, status}) =>{
       resolve(result)
     })
     .catch((error) =>{
-      error = 'update gagal'
+      error = 'update failed'
       reject(error)
     })
   })

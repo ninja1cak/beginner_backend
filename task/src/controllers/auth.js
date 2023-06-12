@@ -20,15 +20,15 @@ ctrl.login = async (req, res) =>{
     
     if(dataUserFromDB.length<= 0){
       return res.send({
-        status: "Gagal login",
-        message: "Username tidak terdaftar"
+        status: "login failed",
+        message: "Username not registered"
       })
     }
 
     if(dataUserFromDB[0].status == 'pending'){
       return res.send({
-        status: 'gagal login',
-        message: 'user belum terverifikasi'
+        status: 'login failed',
+        message: 'account not verified'
       })
     }
     
@@ -41,15 +41,15 @@ ctrl.login = async (req, res) =>{
     if(isPassword){
       const token = jwt.generateToken(username,role, id_user)
       return res.send({
-        status : "berhasil login",
+        status : "login success",
         message: "token created",
         token
       })
       
     }else{
       return res.send({
-        status : "Gagal login",
-        message : "Password salah"
+        status : "login failed",
+        message : "Wrong password"
       })
     }
         
@@ -68,7 +68,7 @@ ctrl.verifyUser = async (req, res) => {
 
     jwtMod.verify(token, process.env.KEY, (error, decode) =>{
       if(error){
-        return res.send("verfikasi gagal")
+        return res.send("verification fail")
       }
       req.email = decode
     })
@@ -80,7 +80,7 @@ ctrl.verifyUser = async (req, res) => {
       }
       await model.updateDataStatus(params)
       return res.send({
-        status : 'verifikasi berhasi',
+        status : 'verification success',
         message: 'Silahkan login kembali'
       })
     }
