@@ -2,39 +2,6 @@ const model = {}
 const database = require('../config/database')
 
 
-// model.addDataBooking = ({
-  // id_movie,
-  // id_schedule,
-  // seats_booking,
-  // total_prices_booking,
-  // watch_date,
-  // payment_method
-//   }) =>{
-  
-//     return new Promise ((resolve, reject) =>{
-//     database.query(`INSERT INTO public.booking (
-//       id_movie,
-//       id_schedule,
-//       seats_booking,
-//       total_prices_booking,
-//       watch_date,
-//       payment_method
-//     ) VALUES ($1, $2, $3, $4, $5, $6)`, [
-//       id_movie,
-//       id_schedule,
-//       seats_booking,
-//       total_prices_booking,
-//       watch_date,
-//       payment_method
-//     ])
-//     .then((result) => {
-//       resolve("data berhasil di input")
-//     })
-//     .catch((e)=>{
-//       reject("data gagal di input")
-//     })
-//   })
-// }
 
 model.addDataBooking = ({      
   id_movie,
@@ -72,19 +39,6 @@ model.addDataBooking = ({
   })
 }
 
-// model.readDataBooking = (id_user) =>{
-//   return new Promise ((resolve, reject) =>{
-//     console.log(id_user)
-//     database.query(`SELECT * FROM public.booking WHERE id_user = $1 ORDER BY id_booking ASC `, [id_user])
-//     .then((result) =>{
-//       resolve(result.rows)
-//     })
-//     .catch((e) => {
-//       reject(e)
-//     })
-//   })
-// }
-
 model.readDataBooking = async (id_user, {page, limit}) =>{
  // eslint-disable-next-line no-useless-catch
  try {
@@ -109,20 +63,20 @@ model.readDataBooking = async (id_user, {page, limit}) =>{
  }
 }
 
-model.updateDataBooking = ({id_movie, seats_booking, id_schedule, watch_date, payment_method,id_booking, total_prices_booking}) =>{
+model.updateDataBooking = ({seats_booking, id_booking, total_prices_booking, id_user}) =>{
   return new Promise((resolve,reject) =>{
     console.log(total_prices_booking)
     database.query(`UPDATE public.booking 
     SET 
-      id_movie = $1,
-      seats_booking = ARRAY[$2],
-      id_schedule = $3,
-      watch_date = $4,
-      payment_method = COALESCE(NULLIF($5, ''), payment_method),
-      total_prices_booking = $6
+     
+      seats_booking = $1,
+      total_prices_booking = $2
       
-    WHERE id_booking = $7`,[id_movie, seats_booking, id_schedule, watch_date,payment_method, total_prices_booking, id_booking])
+    WHERE id_booking = $3 AND id_user = $4`,[seats_booking, total_prices_booking, id_booking, id_user])
     .then((result)=>{
+      if(result.rowCount <= 0 ){
+        resolve(false)
+      }
       resolve(`${result.rowCount} data booking succesfully updated`)
     })
     .catch((err) => {
@@ -133,11 +87,12 @@ model.updateDataBooking = ({id_movie, seats_booking, id_schedule, watch_date, pa
   })
 }
 
-model.deleteDataBooking = ({id_booking}) =>{
+model.deleteDataBooking = ({id_booking, id_user}) =>{
   return new Promise((resolve,reject)=>{
     database.query(`DELETE FROM public.booking
-    WHERE id_booking = $1`, [id_booking])
+    WHERE id_booking = $1 AND id_user = $2`, [id_booking, id_user])
     .then((result) =>{
+      if(result.rowCount == 0) resolve(false)
       resolve(`${result.rowCount}data booking succesfully deleted`)
     })
     .catch((error)=>{

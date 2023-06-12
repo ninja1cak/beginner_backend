@@ -15,18 +15,20 @@ ctrl.login = async (req, res) =>{
     
     const dataUserFromDB = await model.readByUser(username)
     
-    if(dataUserFromDB[0].status == 'pending'){
-      return res.send({
-        status: 'gagal login',
-        message: 'user belum terverifikasi'
-      })
-    }
+
     console.log(dataUserFromDB)
     
     if(dataUserFromDB.length<= 0){
       return res.send({
         status: "Gagal login",
         message: "Username tidak terdaftar"
+      })
+    }
+
+    if(dataUserFromDB[0].status == 'pending'){
+      return res.send({
+        status: 'gagal login',
+        message: 'user belum terverifikasi'
       })
     }
     

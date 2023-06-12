@@ -4,8 +4,9 @@ const database = require('../config/database')
 
 
 model.addDataMovie = async ({title_movie, genre, director_movie, casts_movie, release_date_movie, url_image_movie}) =>{
+  const pg = await database.connect()
   try {
-    await database.query('BEGIN')
+    await pg.query('BEGIN')
 
     const movie = await database.query(`INSERT INTO public.movie(
       title_movie,
@@ -22,11 +23,11 @@ model.addDataMovie = async ({title_movie, genre, director_movie, casts_movie, re
       ])
     console.log(movie.rows[0].id_movie)
     
-    await database.query('COMMIT')
+
 
     if(genre && genre.length > 0){
       genre.map( async (element) => {
-        return await database.query(`INSERT INTO
+        return await pg.query(`INSERT INTO
           public.bridge_movie_genre(id_movie, id_genre)
           VALUES ($1, $2)  
         `,[
@@ -36,11 +37,11 @@ model.addDataMovie = async ({title_movie, genre, director_movie, casts_movie, re
       })
     }
 
-
+    await pg.query('COMMIT')
     return 'data movie created'
     
   } catch (error) {
-    await database.query('ROLLBACK')
+    await pg.query('ROLLBACK')
     throw error
   }
 }
@@ -105,10 +106,11 @@ model.updateDataMovie = async ({
   id_movie, 
   synopsis_movie,
   duration_movie}) => { 
+    const pg = await database.connect()
     try {
-      await database.query('BEGIN')
+      await pg.query('BEGIN')
       
-      await database.query(`UPDATE public.movie
+      await pg.query(`UPDATE public.movie
       SET
         title_movie = COALESCE(NULLIF($1, ''), title_movie),
         director_movie = COALESCE(NULLIF($2, ''), director_movie),
@@ -129,10 +131,10 @@ model.updateDataMovie = async ({
       ])
       console.log(id_movie)
   
-      await database.query("COMMIT")   
+      
       if(genre.length > 0){
 
-        const getDataMovieGenre = await database.query(`SELECT id_bridge_movie_genre 
+        const getDataMovieGenre = await pg.query(`SELECT id_bridge_movie_genre 
         FROM public.bridge_movie_genre WHERE id_movie = $1`,[id_movie])
         genre = [genre]
         genre.map( async (element, index) => {      
@@ -148,25 +150,26 @@ model.updateDataMovie = async ({
           ])
         })
     }
- 
+      await pg.query("COMMIT")   
       return "update berhasil"
     } catch (error) {
-      await database.query("ROLLBACK")
+      await pg.query("ROLLBACK")
       throw error
     }
   }
 
 
 model.deleteDataMovie = async ({id_movie}) =>{
+  const pg = await database.connect()
   try {
-    await database.query('BEGIN')
+    await pg.query('BEGIN')
     
-    await database.query('DELETE FROM public.bridge_movie_genre WHERE id_movie = $1',[id_movie])
-    const result = await database.query('DELETE FROM public.movie WHERE id_movie = $1', [id_movie]) 
-    await database.query('COMMIT')
+
+    const result = await pg.query('DELETE FROM public.movie WHERE id_movie = $1', [id_movie]) 
+    await pg.query('COMMIT')
     return `${result.rowCount} delete berhasil`
   } catch (error) {
-    await database.query('ROLLBACK')
+    await pg.query('ROLLBACK')
     throw error
   }
 }

@@ -18,7 +18,7 @@ model.addUser = ({username, password_user, email_user, role, status}) =>{
       status      
     ]).then((result)=>{
       
-      result = "User berhasil dibuat, cek verifikasi kode"
+      result = "User berhasil dibuat, cek email untuk verifikasi akun"
       resolve(result)
     }).catch((error)=>{
       error = "data gagal dibuat"
@@ -60,7 +60,7 @@ model.updateDataByUser = ({username, email_user, password_user, id_user}) =>{
     ])
     .then((result) => {
        
-      resolve(result)
+      resolve(result.rowCount)
     })
     .catch((error) =>{
       error = 'update gagal'

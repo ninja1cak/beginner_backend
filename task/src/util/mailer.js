@@ -17,7 +17,7 @@ const configSendaMail =  (email, confirmationCode) => {
     from: 'hauzan41200@gmail.com',
     to: email,
     subject: 'subject',
-    text: `localhost:8888/auth/${confirmationCode}`
+    text: `Buka link ini untuk verifikasi akun: localhost:8888/auth/${confirmationCode}`
   }
   transporter.sendMail(mailOptions,( error, info) => {
     if(error){

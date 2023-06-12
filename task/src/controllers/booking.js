@@ -1,5 +1,6 @@
 const ctrl = {}
 const model = require('../models/booking')
+const modelSchedule = require('../models/schedule')
 const {respons} = require('../util/respons')
 
 
@@ -8,17 +9,18 @@ ctrl.insertDataBooking = async (req, res) =>{
     const {      
       id_movie,
       id_schedule,
-      total_prices_booking,
       seats_booking,
       watch_date,
       payment_method} = req.body
     
     
-
+    console.log(seats_booking.length)
+    const price_seat = await modelSchedule.readDataScheduleBy({id_schedule})
+    console.log()
     const result = await model.addDataBooking({      
       id_movie,
       id_schedule,
-      total_prices_booking,
+      total_prices_booking: price_seat[0].price_seat*seats_booking.length,
       seats_booking,
       watch_date,
       payment_method,
@@ -66,12 +68,14 @@ ctrl.getDataBooking = async (req, res) =>{
 ctrl.changeDataBooking = async (req,res) =>{
   try {
     
-
-
-    const {id_booking} = req.params
-    const {id_movie, seats_booking, id_schedule, watch_date ,payment_method, total_prices_booking} = req.body
-    const result = await model.updateDataBooking({id_movie, seats_booking, id_schedule, watch_date, payment_method, id_booking, total_prices_booking})
-    return respons(res, 200, result)
+    const {id_booking, id_schedule} = req.params
+    const price_seat = await modelSchedule.readDataScheduleBy({id_schedule})
+    const {seats_booking} = req.body
+    console.log(req.id)
+    const result = await model.updateDataBooking({id_user: req.id ,seats_booking, id_booking, total_prices_booking: price_seat[0].price_seat *seats_booking.length})
+    
+    if(!result) return respons(res, 401, "data booking tidak ditemukan")
+    return respons(res, 500, result)
     
   } catch (error) {
     return respons(res, 500, error.message)
@@ -83,7 +87,8 @@ ctrl.removeDataBooking = async (req, res) => {
     
 
     const {id_booking} = req.params
-    const result = await model.deleteDataBooking({id_booking})
+    const result = await model.deleteDataBooking({id_booking, id_user: req.id})
+    if(!result) return respons(res, 401, "data booking tidak ditemukan")
     return respons(res, 200, result)
 
   }catch(error){
