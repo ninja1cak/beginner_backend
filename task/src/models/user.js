@@ -2,21 +2,23 @@ const model = {}
 const database = require('../config/database')
 
 
-model.addUser = ({username, password_user, email_user, role}) =>{
+model.addUser = ({username, password_user, email_user, role, status}) =>{
   return new Promise ((resolve, reject) => {
     database.query(`INSERT INTO public.users(
       username,
       password_user,
       email_user, 
-      role
-    ) VALUES ($1, $2, $3, $4)`, [
+      role,
+      status
+    ) VALUES ($1, $2, $3, $4, $5)`, [
       username,
       password_user,
       email_user,
-      role      
+      role,
+      status      
     ]).then((result)=>{
       
-      result = "User berhasil dibuat"
+      result = "User berhasil dibuat, cek verifikasi kode"
       resolve(result)
     }).catch((error)=>{
       error = "data gagal dibuat"
@@ -81,4 +83,26 @@ model.deleteDataUser = (username) =>{
     })
   })
 }
+
+model.updateDataStatus = ({email_user, status}) =>{
+  return new Promise ((resolve, reject) =>{
+
+    database.query(`UPDATE public.users 
+    SET
+      status = COALESCE(NULLIF($1, ''), status)      
+    WHERE email_user = $2`, [
+      status,
+      email_user
+    ])
+    .then((result) => {
+       
+      resolve(result)
+    })
+    .catch((error) =>{
+      error = 'update gagal'
+      reject(error)
+    })
+  })
+}
+
 module.exports = model

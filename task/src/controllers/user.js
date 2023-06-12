@@ -22,16 +22,17 @@ ctrl.insertDataUser = async (req, res) =>{
     const parameter = {
       ...req.body,
       password_user : hashPassword,
-      role : roleValue
+      role : roleValue,
+      status: 'pending'
     }
     
     const tokenActivation = jwt.sign(req.body.email_user, process.env.KEY)
 
     sendActivationMail(req.body.email_user, tokenActivation)
 
-    const {username, password_user,email_user, role} = parameter
+    const {username, password_user,email_user, role, status} = parameter
   
-    const result = await model.addUser({username, password_user, email_user, role})
+    const result = await model.addUser({username, password_user, email_user, role, status})
     return respons(res, 201, result)
     
   } catch (error) {
