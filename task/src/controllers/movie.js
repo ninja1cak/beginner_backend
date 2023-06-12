@@ -12,6 +12,8 @@ ctrl.insertDataMovie = async (req, res) =>{
         ...req.body,
         url_image_movie: req.file.filename
       }
+    }else{
+      return respons(res, 400, "jpg, jpeg, or png only")
     }
     
     const {title_movie, genre, director_movie, casts_movie, release_date_movie, url_image_movie} = req.body
