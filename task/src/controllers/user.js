@@ -10,7 +10,6 @@ ctrl.insertDataUser = async (req, res) =>{
  
   try {
     const hashPassword = await hash(req.body.password_user)
-    console.log(req.body)
     let roleValue = ''
     
     if(req.body?.role == undefined || req.body.role != 'admin') { //req.body?.role cek apakah ada object role
@@ -57,7 +56,6 @@ ctrl.changeDataByUser = async (req, res) =>{
 
     let password_user = ''
     if(req.body.password_user != undefined){
-      console.log("password")
       password_user = await hash(req.body.password_user)
     }
 
@@ -66,7 +64,6 @@ ctrl.changeDataByUser = async (req, res) =>{
       password_user: password_user,
       id_user : req.id
     }
-    console.log(params)
 
     const result = await model.updateDataByUser(params)
     return respons(res, 200, result)

@@ -7,7 +7,6 @@ ctrl.insertDataMovie = async (req, res) =>{
 
 
     if(req.file !== undefined){
-      console.log(req.file.filename)
       req.body = {
         ...req.body,
         url_image_movie: req.file.filename
@@ -36,7 +35,7 @@ ctrl.getDataMovie = async (req, res) =>{
       limit : limit || 3,
       id_movie : id_movie
     }
-    console.log(params)
+
     const result = await model.readDataMovie(params)
     return respons(res, 200, result)
 
@@ -54,7 +53,6 @@ ctrl.changaDataMovie = async (req, res)=>{
       req.body.url_image_movie = req.file.filename
     }
 
-    console.log('masuk changedatamovie')
     const {title_movie, 
       genre, 
       director_movie, 
@@ -75,7 +73,6 @@ ctrl.changaDataMovie = async (req, res)=>{
       synopsis_movie,
       duration_movie})
     
-      console.log(result)
     return respons(res, 200, result)
   }catch(e){
     return respons(res, 500, e.message)
@@ -103,7 +100,7 @@ ctrl.getDataMovieBy = async (req, res) =>{
       orderBy : req.query.orderBy ||'title_movie',
       search : req.query.search
     }
-    console.log(params)
+
     const result = await model.readDataMovieBy(params)
     return respons(res, 200, result)
   } catch (error) {

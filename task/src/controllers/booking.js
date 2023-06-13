@@ -13,10 +13,8 @@ ctrl.insertDataBooking = async (req, res) =>{
       watch_date,
       payment_method} = req.body
     
-    
-    console.log(seats_booking.length)
     const price_seat = await modelSchedule.readDataScheduleBy({id_schedule})
-    console.log()
+
     const result = await model.addDataBooking({      
       id_movie,
       id_schedule,
@@ -37,7 +35,6 @@ ctrl.insertDataBooking = async (req, res) =>{
 ctrl.getDataBooking = async (req, res) =>{
   try {
     
-    console.log(req.id)
     const {page, limit, id_booking} = req.query
     const params = {
       page : page || 1,
@@ -53,26 +50,12 @@ ctrl.getDataBooking = async (req, res) =>{
   }
 }
 
-
-// ctrl.changeDataBooking = async (req,res) =>{
-//   try {
-//     const {id_booking} = req.params
-//     const {payment_method} = req.body
-//     const result = await model.updateDataBooking({payment_method, id_booking})
-//     return res.status(200).json(result)
-    
-//   } catch (error) {
-//     return res.send(error)
-//   }
-// }
-
 ctrl.changeDataBooking = async (req,res) =>{
   try {
     
     const {id_booking, id_schedule} = req.params
     const price_seat = await modelSchedule.readDataScheduleBy({id_schedule})
     const {seats_booking} = req.body
-    console.log(req.id)
     const result = await model.updateDataBooking({id_user: req.id ,seats_booking, id_booking, total_prices_booking: price_seat[0].price_seat *seats_booking.length})
     
     if(!result) return respons(res, 401, "data booking tidak ditemukan")

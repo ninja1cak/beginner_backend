@@ -11,7 +11,6 @@ model.addDataBooking = ({
   watch_date,
   payment_method,
   id_user }) =>{
-    console.log({id_user})
     return new Promise((resolve, reject)=>{
     database.query(`INSERT INTO public.booking(
       id_movie,
@@ -57,7 +56,6 @@ model.readDataBooking = async (role, id_user, {page, limit, id_booking}) =>{
       const totalData = await database.query(`SELECT COUNT(id_user) FROM public.booking WHERE id_user = $1 ${filterQuery}`,[id_user])
       count = totalData.rows[0].count    
       getData = await database.query(`SELECT * FROM public.booking WHERE id_user = $1 ${filterQuery} LIMIT $2 OFFSET $3`,[id_user, limit, offset])
-      console.log(getData.rows)
     }
 
     if(role == 'admin'){
@@ -85,7 +83,7 @@ model.readDataBooking = async (role, id_user, {page, limit, id_booking}) =>{
 
 model.updateDataBooking = ({seats_booking, id_booking, total_prices_booking, id_user}) =>{
   return new Promise((resolve,reject) =>{
-    console.log(total_prices_booking)
+
     database.query(`UPDATE public.booking 
     SET 
      
@@ -100,7 +98,6 @@ model.updateDataBooking = ({seats_booking, id_booking, total_prices_booking, id_
       resolve(`${result.rowCount} data booking succesfully updated`)
     })
     .catch((err) => {
-      console.log(err)
       reject(err)
     })
 
@@ -128,7 +125,6 @@ model.readDetailDataBooking = async ({id_user, page, limit}) =>{
 
     const totalData = await database.query(`SELECT COUNT(id_user) count FROM booking WHERE id_user = $1`, [id_user])
     const count = totalData.rows[0].count
-    console.log(count)
     const meta = {
       next: count <= 0 ? null : Math.ceil(count/limit) == page ? null : Number(page) +1,
       prev: page == 1 ? null : Number(page) - 1,

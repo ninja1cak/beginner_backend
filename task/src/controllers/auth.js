@@ -9,14 +9,9 @@ require('dotenv/config')
 
 ctrl.login = async (req, res) =>{
   try {
-    console.log('tes')
 
-    const {username} = req.body
-    
+    const {username} = req.body    
     const dataUserFromDB = await model.readByUser(username)
-    
-
-    console.log(dataUserFromDB)
     
     if(dataUserFromDB.length<= 0){
       return res.send({
