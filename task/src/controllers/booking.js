@@ -75,7 +75,7 @@ ctrl.changeDataBooking = async (req,res) =>{
     const result = await model.updateDataBooking({id_user: req.id ,seats_booking, id_booking, total_prices_booking: price_seat[0].price_seat *seats_booking.length})
     
     if(!result) return respons(res, 401, "data booking tidak ditemukan")
-    return respons(res, 500, result)
+    return respons(res, 200, result)
     
   } catch (error) {
     return respons(res, 500, error.message)

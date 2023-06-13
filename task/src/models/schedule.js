@@ -93,4 +93,16 @@ model.deleteDataMovie = ({id_schedule}) =>{
   })
 }
 
+model.readDataScheduleBy = ({id_schedule}) =>{
+  return new Promise((resolve, reject) => {
+    database.query(`SELECT price_seat FROM public.schedule WHERE id_schedule = $1`, [id_schedule])
+    .then((result) =>{
+      resolve(result.rows)
+    })
+    .catch((error) =>{
+      reject(error)
+    })
+  })
+}
+
 module.exports = model
