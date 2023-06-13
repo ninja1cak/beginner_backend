@@ -38,10 +38,11 @@ ctrl.getDataBooking = async (req, res) =>{
   try {
     
     console.log(req.id)
-    const {page, limit} = req.query
+    const {page, limit, id_booking} = req.query
     const params = {
       page : page || 1,
-      limit : limit || 2
+      limit : limit || 2,
+      id_booking: id_booking
     }
     const result = await model.readDataBooking(req.role, req.id, params)
 

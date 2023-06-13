@@ -1,6 +1,6 @@
 const model = {}
 const database = require('../config/database')
-
+const escape = require('pg-format')
 
 
 model.addDataBooking = ({      
@@ -39,23 +39,31 @@ model.addDataBooking = ({
   })
 }
 
-model.readDataBooking = async (role, id_user, {page, limit}) =>{
+model.readDataBooking = async (role, id_user, {page, limit, id_booking}) =>{
  // eslint-disable-next-line no-useless-catch
  try {
-    const offset = (limit-1) * page  
+    const offset = (page-1) * limit  
     let count = 0
     let getData = {}
+    let filterQuery = ''
+    
+    if(id_booking){
+      filterQuery += escape(`AND id_booking = %s`,id_booking)
+
+    }
+    
     if(role == 'user'){
 
-      const totalData = await database.query(`SELECT COUNT(id_user) FROM public.booking WHERE id_user = $1`,[id_user])
+      const totalData = await database.query(`SELECT COUNT(id_user) FROM public.booking WHERE id_user = $1 ${filterQuery}`,[id_user])
       count = totalData.rows[0].count    
-      getData = await database.query(`SELECT * FROM public.booking WHERE id_user = $1 LIMIT $2 OFFSET $3`,[id_user, limit, offset])
+      getData = await database.query(`SELECT * FROM public.booking WHERE id_user = $1 ${filterQuery} LIMIT $2 OFFSET $3`,[id_user, limit, offset])
+      console.log(getData.rows)
     }
 
     if(role == 'admin'){
       const totalData = await database.query(`SELECT COUNT(id_booking) FROM public.booking`)
       count = totalData.rows[0].count
-      getData = await database.query(`SELECT * FROM public.booking LIMIT $1 OFFSET $2`,[limit, offset])
+      getData = await database.query(`SELECT * FROM public.booking WHERE true ${filterQuery} LIMIT $1 OFFSET $2`,[limit, offset])
     }
 
     const meta = {
