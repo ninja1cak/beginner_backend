@@ -1,13 +1,14 @@
 # Beginner Backend
 Pembuatan backend menggunakan framework express.js dengan database postgresql. Flow yang digunakan menggunakan prinsip Model-View-Controller (MVC)
 
-## Task Revision
+## Task Revision Beginner Backend
 Task yang sudah direvisi adalah sebagai berikut.
 - mengganti error handler dari console.log menjadi return res.send
 - mengganti POST query menjadi GET query
 - mengganti req.body menjadi req.params (bagian DELETE) dan req.query (bagian QUERY data)
 - kombinasi req.body dan req.params pada bagian update.
 
-## Problem/Trouble
-Problem/trouble yang belum di fix.
-- saat menggunakan db transaction pada tabel movie, commit harus dimasukkan sebelum database insert genre movie. Jika commit di masukkan setelah insert genre movie, terjadi error id movie tidak ditemukan dalam database ketika query insert value genre.
+### Task Revision Intermediate Backend
+Task yang sudah direvisi adalah sebagai berikut.
+- Error pada controller create dan update di akibatkan model.readScheduleBy kehapus, jika di cek pada commit bagian **fixing model and ctrl booking** saya sudah tambahkan model.readByschedule, akan tetapi pada commit berikutnya yaitu **add total data in pagination schedule** model.readScheduleBy tidak sengaja saya hapus. Solusinya model.readScheduleBy sudah saya tambahkan kembali di model bagian schedule.
+- menghapus console.log() setiap code
