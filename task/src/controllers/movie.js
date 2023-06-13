@@ -29,11 +29,12 @@ ctrl.insertDataMovie = async (req, res) =>{
   
 ctrl.getDataMovie = async (req, res) =>{
   try{
-    const {page, limit} = req.query
+    const {page, limit, id_movie} = req.query
    
     const params = {
       page : page || 1,
-      limit : limit || 3
+      limit : limit || 3,
+      id_movie : id_movie
     }
     console.log(params)
     const result = await model.readDataMovie(params)

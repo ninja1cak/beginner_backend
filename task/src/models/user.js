@@ -29,11 +29,8 @@ model.addUser = ({username, password_user, email_user, role, status}) =>{
 
 model.readByUser = (username, email_user) =>{
   return new Promise ((resolve, reject) => {
-    console.log('masuk promise')
     database.query(`SELECT * FROM public.users WHERE username = $1 OR email_user = $2`, [username, email_user])
     .then((res) => {
-      console.log('masuk then')
-      console.log(res.rows)
       resolve(res.rows)
     })
     .catch((error) =>{
@@ -46,7 +43,6 @@ model.readByUser = (username, email_user) =>{
 
 model.updateDataByUser = ({username, email_user, password_user, id_user}) =>{
   return new Promise ((resolve, reject) =>{
-    console.log({username, email_user, password_user, id_user})
     database.query(`UPDATE public.users 
     SET
       username = COALESCE(NULLIF($1, ''), username),
@@ -86,7 +82,6 @@ model.deleteDataUser = (username) =>{
 
 model.updateDataStatus = ({email_user, status}) =>{
   return new Promise ((resolve, reject) =>{
-
     database.query(`UPDATE public.users 
     SET
       status = COALESCE(NULLIF($1, ''), status)      

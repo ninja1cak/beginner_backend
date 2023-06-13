@@ -1,6 +1,6 @@
 const model = {}
 const database = require('../config/database')
-
+const escape = require('pg-format')
 
 
 model.addDataMovie = async ({title_movie, genre, director_movie, casts_movie, release_date_movie, url_image_movie}) =>{
@@ -21,9 +21,6 @@ model.addDataMovie = async ({title_movie, genre, director_movie, casts_movie, re
         release_date_movie,
         url_image_movie
       ])
-    console.log(movie.rows[0].id_movie)
-    
-
 
     if(genre && genre.length > 0){
       genre.map( async (element) => {
@@ -46,17 +43,20 @@ model.addDataMovie = async ({title_movie, genre, director_movie, casts_movie, re
   }
 }
 
-model.readDataMovie = async ({page, limit}) =>{
+model.readDataMovie = async ({page, limit, id_movie}) =>{
   // eslint-disable-next-line no-useless-catch
   try {
    
     const offset =  (page-1) * limit
-
+    let filterQuery = ''
+    if(id_movie){
+      filterQuery += escape(`WHERE m.id_movie = %s`, id_movie)
+    }
+    
     const totalData = await database.query(
       `SELECT COUNT(id_movie) count FROM public.movie`
     )
     const count = totalData.rows[0].count
-    console.log(totalData.rows[0].count)
     const meta = {
       next : count == 0 ? null : page == Math.ceil(count/limit) ? null : Number(page) + 1,
       prev : page == 1 ? null : Number(page) - 1,
@@ -79,7 +79,7 @@ model.readDataMovie = async ({page, limit}) =>{
         synopsis_movie
       FROM public.movie m JOIN public.bridge_movie_genre pbmg
       ON m.id_movie = pbmg.id_movie JOIN public.genre g
-      ON g.id_genre = pbmg.id_genre GROUP BY m.id_movie
+      ON g.id_genre = pbmg.id_genre ${filterQuery} GROUP BY m.id_movie
       LIMIT $1 OFFSET $2
       `,[
         limit, offset
@@ -129,8 +129,6 @@ model.updateDataMovie = async ({
         duration_movie,
         id_movie
       ])
-      console.log(id_movie)
-  
       
       if(genre.length > 0){
 
@@ -179,11 +177,7 @@ model.readDataMovieBy = async ({page, limit, orderBy, search}) =>{
   try {
     search[0] += '%'
     
-    // console.log({page, limit, orderBy, search})
-  
-    
     const offset = (page - 1) * limit
-
     const totalData = await database.query(`SELECT COUNT(distinct m.id_movie) count FROM public.movie m
     JOIN public.bridge_movie_genre bmg  on 
     bmg.id_movie  =  m.id_movie  

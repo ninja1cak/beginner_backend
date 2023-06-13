@@ -19,7 +19,8 @@ ctrl.getDataSchedule = async (req, res) => {
   try{
     const params = {
       page : req.query.page || 1,
-      limit : req.query.limit || 2
+      limit : req.query.limit || 2,
+      id_schedule: req.query.id_schedule 
     }
     const result = await model.readDataSchedule(params)
     return respons(res, 201, result)

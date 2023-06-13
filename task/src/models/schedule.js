@@ -1,5 +1,6 @@
 const model = {}
 const database = require('../config/database')
+const escape = require('pg-format')
 
 model.addDataSchedule = ({      
   id_movie, 
@@ -41,14 +42,23 @@ model.addDataSchedule = ({
 }
 
 
-model.readDataSchedule = async ({page, limit}) =>{
+model.readDataSchedule = async ({page, limit, id_schedule}) =>{
   // eslint-disable-next-line no-useless-catch
   try {
     
+    let filterQuery = ''
+
+
+    if(id_schedule){
+      filterQuery = escape(`WHERE id_schedule = %s`, id_schedule)
+    }
+
     const offset = (page - 1) * limit
-    const totalData = await database.query(`SELECT COUNT(id_schedule) FROM public.schedule`)
+    
+    
+    const totalData = await database.query(`SELECT COUNT(id_schedule) FROM public.schedule ${filterQuery}`)
     const count = totalData.rows[0].count
-    const data = await database.query(`SELECT * FROM public.schedule LIMIT $1 OFFSET $2`, [limit, offset])
+    const data = await database.query(`SELECT * FROM public.schedule ${filterQuery} LIMIT $1 OFFSET $2 `, [limit, offset])
     
     const meta = {
       next: count <= 0 ? null : Math.ceil(count/limit) == page ? null : Number(page) + 1,
