@@ -9,6 +9,9 @@ const {respons} = require('../util/respons')
 ctrl.insertDataUser = async (req, res) =>{
  
   try {
+    
+    console.log(req.body)
+    
     const hashPassword = await hash(req.body.password_user)
     let roleValue = ''
     
@@ -22,16 +25,17 @@ ctrl.insertDataUser = async (req, res) =>{
       ...req.body,
       password_user : hashPassword,
       role : roleValue,
-      status: 'pending'
+      status: 'pending',
+      username: req.body.email_user
     }
     
     const tokenActivation = jwt.sign(req.body.email_user, process.env.KEY)
 
     sendActivationMail(req.body.email_user, tokenActivation)
 
-    const {username, password_user,email_user, role, status} = parameter
+    const {username, password_user,email_user, role, status, first_name, last_name} = parameter
   
-    const result = await model.addUser({username, password_user, email_user, role, status})
+    const result = await model.addUser({username, password_user, email_user, role, status, first_name, last_name})
     return respons(res, 201, result)
     
   } catch (error) {
@@ -42,7 +46,7 @@ ctrl.insertDataUser = async (req, res) =>{
 
 ctrl.getDataByUser = async (req, res) =>{
   try {
-
+    console.log(req.user)
     const result = await model.readByUser(req.user)
 
     return respons(res, 200, result)
@@ -54,17 +58,28 @@ ctrl.getDataByUser = async (req, res) =>{
 ctrl.changeDataByUser = async (req, res) =>{
   try {
 
+    let status
     let password_user = ''
     if(req.body.password_user != undefined){
       password_user = await hash(req.body.password_user)
     }
+    console.log(req.body.email_user)
+
+    if(req.body.email_user != undefined && req.body.email_user != ''  ){
+      const tokenActivation = jwt.sign(req.body.email_user, process.env.KEY)
+      sendActivationMail(req.body.email_user, tokenActivation)
+      status = 'pending';
+    }
+
+    console.log('status : ',status)
 
     const params = {
       ...req.body,
       password_user: password_user,
-      id_user : req.id
+      id_user : req.id,
+      status : status || 'active'
     }
-
+    console.log(params)
     const result = await model.updateDataByUser(params)
     return respons(res, 200, result)
   } catch (error) {

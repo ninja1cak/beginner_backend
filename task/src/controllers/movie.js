@@ -1,26 +1,39 @@
 const ctrl = {}
 const model = require('../models/movie')
+const upload = require('../util/upload')
 const {respons} = require('../util/respons')
 
 ctrl.insertDataMovie = async (req, res) =>{
   try{
 
+    console.log('body', req.body)
 
     if(req.file !== undefined){
-      req.body = {
-        ...req.body,
-        url_image_movie: req.file.filename
-      }
+      req.body.url_image_movie = await upload(req.file.path)
+      console.log(req.body.url_image_movie)
+
     }else{
       return respons(res, 400, "jpg, jpeg, or png only")
     }
+    console.log(req.body)
+    let {title_movie, genre, director_movie, casts_movie, release_date_movie, url_image_movie, duration_movie, synopsis_movie} = req.body
     
-    const {title_movie, genre, director_movie, casts_movie, release_date_movie, url_image_movie} = req.body
-    const result = await model.addDataMovie({title_movie, genre, director_movie, casts_movie, release_date_movie, url_image_movie})
+    if(!Array.isArray(genre)){
+      genre =genre.split(',')
+      console.log(genre)
+    }
+
+    if(!Array.isArray(casts_movie)){
+      casts_movie = casts_movie.split(',')
+
+    }
+
+    const result = await model.addDataMovie({title_movie, genre, director_movie, casts_movie, release_date_movie, url_image_movie, duration_movie, synopsis_movie})
     
     return respons(res, 201, result)
 
   }catch(e){
+    
     return respons(res, 500, e.message)
   }
 }
@@ -28,13 +41,21 @@ ctrl.insertDataMovie = async (req, res) =>{
   
 ctrl.getDataMovie = async (req, res) =>{
   try{
-    const {page, limit, id_movie} = req.query
-   
-    const params = {
-      page : page || 1,
-      limit : limit || 3,
-      id_movie : id_movie
+    const {page, limit, search} = req.query
+    
+    if(search ===undefined || search === ''){
+      req.query.search = ''
+    }else{
+      req.query.search =`%${search}%`
     }
+
+    const params = {
+      ...req.query,
+      page : page || 1,
+      limit : limit || 3
+    }
+
+    console.log(params.search)
 
     const result = await model.readDataMovie(params)
     return respons(res, 200, result)
@@ -46,11 +67,12 @@ ctrl.getDataMovie = async (req, res) =>{
 
 ctrl.changaDataMovie = async (req, res)=>{
   try{
-
+    console.log(req.body)
     const {id_movie} = req.params
    
     if(req.file != undefined){
-      req.body.url_image_movie = req.file.filename
+      req.body.url_image_movie = await upload(req.file.path)
+      console.log(req.body.url_image_movie)
     }
 
     const {title_movie, 
@@ -62,16 +84,30 @@ ctrl.changaDataMovie = async (req, res)=>{
       synopsis_movie,
       duration_movie} = req.body
     
-    const result = await model.updateDataMovie({  
-      title_movie, 
-      genre, 
-      director_movie, 
-      casts_movie, 
-      release_date_movie, 
-      url_image_movie, 
-      id_movie, 
+    
+    const dataMovie = {
+      title_movie,
+      director_movie,
+      casts_movie,
+      release_date_movie,
+      url_image_movie,
       synopsis_movie,
-      duration_movie})
+      duration_movie
+    }
+
+    
+    // const result = await model.updateDataMovie({  
+    //   title_movie, 
+    //   genre, 
+    //   director_movie, 
+    //   casts_movie, 
+    //   release_date_movie, 
+    //   url_image_movie, 
+    //   id_movie, 
+    //   synopsis_movie,
+    //   duration_movie})
+
+    const result = await model.updateDataMovie(dataMovie,{id_movie, genre})
     
     return respons(res, 200, result)
   }catch(e){
